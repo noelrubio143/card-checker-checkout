@@ -8,48 +8,25 @@
   </head>
   <body>
     <div class="page">
-      <div class="checkout">
-        <section class="panel order-panel">
-          <div class="topbar">
-            <div class="brand">
-              <span class="brand-mark"></span>
-              <span>PayPal</span>
+      <div class="checkout-wrap">
+        <section class="panel catalog-panel">
+          <div class="catalog-header">
+            <div>
+              <div class="eyebrow">Popular items</div>
+              <h1>Shop the latest tech</h1>
             </div>
-            <div class="secure-pill">Secure Checkout</div>
+            <div class="secure-pill">Verified secure store</div>
           </div>
 
-          <div class="product">
-            <div class="thumb">🎧</div>
-            <div class="details">
-              <h2>Premium Wireless Headphones</h2>
-              <p>Black • Studio Pro</p>
-            </div>
-            <div class="price">$299</div>
-          </div>
-
-          <div class="summary">
-            <div class="summary-row">
-              <span>Subtotal</span>
-              <span>$299.00</span>
-            </div>
-            <div class="summary-row">
-              <span>Shipping</span>
-              <span>$12.00</span>
-            </div>
-            <div class="summary-row">
-              <span>Tax</span>
-              <span>$25.00</span>
-            </div>
-            <div class="summary-row total">
-              <span>Total</span>
-              <span>$336.00</span>
-            </div>
-          </div>
+          <div id="productList" class="product-list"></div>
         </section>
 
         <section class="panel payment-panel">
           <div class="payment-header">
-            <h3>Payment</h3>
+            <div>
+              <div class="eyebrow">Checkout</div>
+              <h2>Payment</h2>
+            </div>
             <div class="secure-pill">VBV / 3DS</div>
           </div>
 
@@ -101,13 +78,18 @@
               </div>
             </div>
 
+            <div class="field">
+              <label>BIN info</label>
+              <div id="binInfo" class="bin-box">Enter a card number to inspect the BIN.</div>
+            </div>
+
             <div id="status" class="status" role="alert"></div>
 
-            <button type="submit" class="pay-button">Pay $336.00</button>
+            <button type="submit" class="pay-button">Pay <span id="totalPrice">$299.00</span></button>
           </form>
 
           <div class="secure-banner">Verified by Visa / Mastercard SecureCode simulation</div>
-          <div class="subnote">Demo only. This does not verify a real card against a bank or payment provider. It simulates a secure checkout flow.</div>
+          <div class="subnote">Demo only. This does not verify a real card against a bank or payment provider.</div>
         </section>
       </div>
     </div>

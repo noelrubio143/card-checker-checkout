@@ -4,6 +4,33 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const products = [
+  {
+    id: 'aurora-buds',
+    name: 'Aurora Wireless Buds',
+    category: 'Audio',
+    price: 129,
+    image: '🎧',
+    description: 'Noise cancelling • 30h battery'
+  },
+  {
+    id: 'nova-watch',
+    name: 'Nova Smart Watch',
+    category: 'Wearables',
+    price: 199,
+    image: '⌚',
+    description: 'GPS • Heart rate • AMOLED'
+  },
+  {
+    id: 'pixel-cam',
+    name: 'Pixel Pro Camera',
+    category: 'Photography',
+    price: 899,
+    image: '📷',
+    description: '4K • Pro lens • 1TB storage'
+  }
+];
+
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -16,6 +43,24 @@ function detectCardBrand(number) {
   if (/^(35|2131|1800)/.test(digits)) return 'JCB';
   if (/^(30[0-5]|36|38)/.test(digits)) return 'Diners';
   return 'Card';
+}
+
+function detectBinInfo(bin) {
+  const digits = String(bin || '').replace(/\D/g, '').slice(0, 6);
+
+  const mappings = {
+    '411111': { bank: 'Chase', issuer: 'Visa', range: 'Visa Classic' },
+    '555555': { bank: 'Bank of America', issuer: 'MasterCard', range: 'MasterCard Gold' },
+    '378282': { bank: 'American Express', issuer: 'Amex', range: 'Amex Platinum' },
+    '601101': { bank: 'Discover', issuer: 'Discover', range: 'Discover Standard' },
+    '356600': { bank: 'JCB', issuer: 'JCB', range: 'JCB Premier' }
+  };
+
+  return mappings[digits] || {
+    bank: 'Unknown issuer',
+    issuer: detectCardBrand(digits),
+    range: 'General card range'
+  };
 }
 
 function luhnCheck(number) {
@@ -70,12 +115,25 @@ function validateCard({ cardNumber, cardName, expiry, cvv }) {
     return { valid: false, message: 'Unsupported card brand.' };
   }
 
+  const binInfo = detectBinInfo(rawNumber.slice(0, 6));
+
   return {
     valid: true,
     brand,
+    binInfo,
     message: 'Card details passed validation.'
   };
 }
+
+app.get('/api/products', (req, res) => {
+  res.json({ products });
+});
+
+app.get('/api/bin-check', (req, res) => {
+  const { bin } = req.query;
+  const info = detectBinInfo(bin || '');
+  res.json({ bin: String(bin || '').slice(0, 6), ...info });
+});
 
 app.post('/api/validate-card', (req, res) => {
   const result = validateCard(req.body || {});
@@ -85,6 +143,22 @@ app.post('/api/validate-card', (req, res) => {
   }
 
   return res.json(result);
+});
+
+app.post('/api/create-order', (req, res) => {
+  const { productId, cardBrand, total } = req.body || {};
+  const product = products.find((p) => p.id === productId) || products[0];
+  const orderId = `ORD-${Date.now().toString().slice(-8)}`;
+
+  res.json({
+    success: true,
+    orderId,
+    productName: product.name,
+    cardBrand: cardBrand || 'Card',
+    total: Number(total || product.price),
+    status: 'Approved',
+    message: 'Payment approved and order created.'
+  });
 });
 
 app.post('/api/verify-otp', (req, res) => {

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order Confirmed</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(180deg, #edf5ff 0%, #f4f7fb 100%);
+        color: #10213c;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 28px;
+      }
+
+      .card {
+        background: white;
+        border: 1px solid #e6edf8;
+        border-radius: 28px;
+        width: min(700px, 100%);
+        box-shadow: 0 24px 60px rgba(16, 33, 60, 0.12);
+        padding: 32px;
+      }
+
+      .badge {
+        display: inline-block;
+        background: #eafaf1;
+        color: #0d7a3d;
+        border: 1px solid rgba(28, 175, 93, 0.2);
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 18px 0 10px;
+        font-size: clamp(2rem, 4vw, 3rem);
+      }
+
+      p {
+        color: #62738b;
+        line-height: 1.6;
+      }
+
+      .summary {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 28px;
+      }
+
+      .item {
+        background: #f8fafc;
+        border: 1px solid #e6edf8;
+        border-radius: 16px;
+        padding: 18px;
+      }
+
+      .item .label {
+        display: block;
+        color: #62738b;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 8px;
+      }
+
+      .item .value {
+        font-size: 1.2rem;
+        font-weight: 700;
+      }
+
+      .actions {
+        margin-top: 28px;
+        display: flex;
+        gap: 12px;
+      }
+
+      .actions a {
+        flex: 1;
+        text-align: center;
+        text-decoration: none;
+        padding: 16px 18px;
+        border-radius: 12px;
+        font-weight: 700;
+      }
+
+      .primary {
+        background: linear-gradient(135deg, #0070ba, #004b8c);
+        color: white;
+      }
+
+      .secondary {
+        background: #edf3ff;
+        color: #10213c;
+      }
+
+      @media (max-width: 620px) {
+        .summary {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="badge">Order Received</div>
+      <h1>Payment approved</h1>
+      <p>Your purchase was successfully processed in the demo checkout flow.</p>
+
+      <div class="summary">
+        <div class="item">
+          <span class="label">Order ID</span>
+          <span class="value" id="orderId">-</span>
+        </div>
+        <div class="item">
+          <span class="label">Product</span>
+          <span class="value" id="productName">-</span>
+        </div>
+        <div class="item">
+          <span class="label">Card Brand</span>
+          <span class="value" id="cardBrand">-</span>
+        </div>
+        <div class="item">
+          <span class="label">Total</span>
+          <span class="value" id="total">-</span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <a class="primary" href="/">Back to shop</a>
+        <a class="secondary" href="/" onclick="location.reload(); return false;">Continue shopping</a>
+      </div>
+    </div>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      document.getElementById('orderId').textContent = params.get('orderId') || 'N/A';
+      document.getElementById('productName').textContent = params.get('product') || 'N/A';
+      document.getElementById('cardBrand').textContent = params.get('brand') || 'N/A';
+
+      const total = params.get('total');
+      document.getElementById('total').textContent = total ? new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD'
+      }).format(Number(total)) : 'N/A';
+    </script>
+  </body>
+</html>

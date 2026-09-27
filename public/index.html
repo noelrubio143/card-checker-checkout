@@ -3,109 +3,392 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PayPal VBV Checkout Demo</title>
-    <link rel="stylesheet" href="/styles.css" />
+    <title>Card Live Checker</title>
+    <style>
+      :root {
+        --bg: #0f172a;
+        --panel: #111827;
+        --card: #f8fafc;
+        --primary: #3b82f6;
+        --success: #22c55e;
+        --danger: #ef4444;
+        --muted: #94a3b8;
+        --text: #e2e8f0;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #020817, #111827 30%, #172554);
+        color: var(--text);
+        font-family: Arial, Helvetica, sans-serif;
+        padding: 24px;
+      }
+
+      .wrapper {
+        width: min(900px, 100%);
+        background: rgba(17, 24, 39, 0.92);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        border-radius: 28px;
+        box-shadow: 0 30px 70px rgba(0,0,0,0.35);
+        padding: 32px;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: clamp(2rem, 4vw, 3rem);
+      }
+
+      .sub {
+        color: var(--muted);
+        margin-bottom: 24px;
+      }
+
+      .card-preview {
+        background: linear-gradient(135deg, #f8fafc, #dbeafe);
+        border-radius: 22px;
+        padding: 18px 18px 20px;
+        color: #0f172a;
+        margin-bottom: 22px;
+        min-height: 200px;
+      }
+
+      .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+      }
+
+      .chip {
+        width: 52px;
+        height: 38px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        position: relative;
+      }
+
+      .chip::before,
+      .chip::after {
+        content: "";
+        position: absolute;
+        inset: 8px;
+        border: 2px solid rgba(120, 80, 0, 0.6);
+        border-radius: 6px;
+      }
+
+      .brand {
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        font-size: 12px;
+      }
+
+      .number {
+        font-size: clamp(1.2rem, 2vw, 2rem);
+        letter-spacing: 0.18em;
+        font-weight: 700;
+        min-height: 34px;
+      }
+
+      .meta {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 18px;
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .meta div:last-child {
+        text-align: right;
+      }
+
+      form {
+        display: grid;
+        gap: 16px;
+      }
+
+      .field {
+        display: grid;
+        gap: 8px;
+      }
+
+      label {
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      input {
+        width: 100%;
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        border-radius: 12px;
+        background: rgba(15, 23, 42, 0.7);
+        color: var(--text);
+        padding: 14px 16px;
+        font-size: 16px;
+        outline: none;
+      }
+
+      input:focus {
+        border-color: rgba(59, 130, 246, 0.9);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+
+      button {
+        margin-top: 6px;
+        border: none;
+        border-radius: 12px;
+        padding: 16px 18px;
+        background: linear-gradient(135deg, var(--primary), #1d4ed8);
+        color: white;
+        font-size: 18px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .result {
+        margin-top: 18px;
+        padding: 14px 16px;
+        border-radius: 12px;
+        display: none;
+        font-size: 15px;
+      }
+
+      .result.success {
+        display: block;
+        background: rgba(34, 197, 94, 0.12);
+        border: 1px solid rgba(34, 197, 94, 0.4);
+        color: #b7f7c7;
+      }
+
+      .result.error {
+        display: block;
+        background: rgba(239, 68, 68, 0.08);
+        border: 1px solid rgba(239, 68, 68, 0.4);
+        color: #fecaca;
+      }
+
+      @media (max-width: 640px) {
+        .row {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div class="page">
-      <div class="checkout-wrap">
-        <section class="panel catalog-panel">
-          <div class="catalog-header">
-            <div>
-              <div class="eyebrow">Popular items</div>
-              <h1>Shop the latest tech</h1>
-            </div>
-            <div class="secure-pill">Verified secure store</div>
+    <div class="wrapper">
+      <h1>Card Live Checker</h1>
+      <div class="sub">Simple card validation demo for a checkout page.</div>
+
+      <div class="card-preview">
+        <div class="top">
+          <div class="chip"></div>
+          <div id="brandText" class="brand">Card</div>
+        </div>
+
+        <div id="previewNumber" class="number">•••• •••• •••• ••••</div>
+
+        <div class="meta">
+          <div>
+            <div style="opacity:0.7">Card Holder</div>
+            <div id="previewName">YOUR NAME</div>
           </div>
-
-          <div id="productList" class="product-list"></div>
-        </section>
-
-        <section class="panel payment-panel">
-          <div class="payment-header">
-            <div>
-              <div class="eyebrow">Checkout</div>
-              <h2>Payment</h2>
-            </div>
-            <div class="secure-pill">VBV / 3DS</div>
+          <div>
+            <div style="opacity:0.7">Expires</div>
+            <div id="previewExpiry">MM/YY</div>
           </div>
-
-          <div class="pay-methods">
-            <div class="method active">Card</div>
-            <div class="method">PayPal</div>
-          </div>
-
-          <div class="payment-card">
-            <div class="card-top">
-              <div class="chip"></div>
-              <div class="card-brand" id="brandBadge">Card</div>
-            </div>
-
-            <div class="card-number" id="cardNumberPreview">•••• •••• •••• ••••</div>
-
-            <div class="card-meta">
-              <div>
-                <strong>Card Holder</strong>
-                <span id="cardNamePreview">YOUR NAME</span>
-              </div>
-              <div>
-                <strong>Expires</strong>
-                <span id="expiryPreview">MM/YY</span>
-              </div>
-            </div>
-          </div>
-
-          <form id="paymentForm" class="form" novalidate>
-            <div class="field">
-              <label for="cardNumber">Card Number</label>
-              <input id="cardNumber" type="text" maxlength="19" placeholder="1234 5678 9012 3456" inputmode="numeric" />
-            </div>
-
-            <div class="field">
-              <label for="cardName">Cardholder Name</label>
-              <input id="cardName" type="text" placeholder="Juan Dela Cruz" />
-            </div>
-
-            <div class="double">
-              <div class="field">
-                <label for="expiry">Expiry</label>
-                <input id="expiry" type="text" maxlength="5" placeholder="12/30" inputmode="numeric" />
-              </div>
-
-              <div class="field">
-                <label for="cvv">CVV</label>
-                <input id="cvv" type="password" maxlength="4" placeholder="123" inputmode="numeric" />
-              </div>
-            </div>
-
-            <div class="field">
-              <label>BIN info</label>
-              <div id="binInfo" class="bin-box">Enter a card number to inspect the BIN.</div>
-            </div>
-
-            <div id="status" class="status" role="alert"></div>
-
-            <button type="submit" class="pay-button">Pay <span id="totalPrice">$299.00</span></button>
-          </form>
-
-          <div class="secure-banner">Verified by Visa / Mastercard SecureCode simulation</div>
-          <div class="subnote">Demo only. This does not verify a real card against a bank or payment provider.</div>
-        </section>
-      </div>
-    </div>
-
-    <div class="modal" id="authModal" aria-hidden="true">
-      <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="authTitle">
-        <h4 id="authTitle">Secure verification</h4>
-        <p>For your security, enter the 6-digit code sent to your phone. This is a VBV / 3DS demo flow.</p>
-        <input id="otpInput" class="otp-input" maxlength="6" placeholder="123456" inputmode="numeric" />
-        <div class="modal-actions">
-          <button type="button" class="cancel-btn" id="cancelAuth">Cancel</button>
-          <button type="button" class="confirm-btn" id="confirmAuth">Verify</button>
         </div>
       </div>
+
+      <form id="cardForm">
+        <div class="field">
+          <label for="cardNumber">Card Number</label>
+          <input id="cardNumber" type="text" maxlength="19" placeholder="1234 5678 9012 3456" />
+        </div>
+
+        <div class="field">
+          <label for="cardName">Cardholder Name</label>
+          <input id="cardName" type="text" placeholder="Juan Dela Cruz" />
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="expiry">Expiry</label>
+            <input id="expiry" type="text" maxlength="5" placeholder="12/30" />
+          </div>
+
+          <div class="field">
+            <label for="cvv">CVV</label>
+            <input id="cvv" type="password" maxlength="4" placeholder="123" />
+          </div>
+        </div>
+
+        <button type="submit">Proceed to Checkout</button>
+      </form>
+
+      <div id="result" class="result"></div>
     </div>
 
-    <script src="/app.js"></script>
+    <script>
+      const cardNumber = document.getElementById('cardNumber');
+      const cardName = document.getElementById('cardName');
+      const expiry = document.getElementById('expiry');
+      const cvv = document.getElementById('cvv');
+      const result = document.getElementById('result');
+      const previewNumber = document.getElementById('previewNumber');
+      const previewName = document.getElementById('previewName');
+      const previewExpiry = document.getElementById('previewExpiry');
+      const brandText = document.getElementById('brandText');
+
+      function detectBrand(number) {
+        const digits = number.replace(/\D/g, '');
+        if (/^4/.test(digits)) return 'Visa';
+        if (/^(5[1-5]|2[2-7])/.test(digits)) return 'MasterCard';
+        if (/^3[47]/.test(digits)) return 'Amex';
+        if (/^(6011|65|64[4-9])/.test(digits)) return 'Discover';
+        if (/^(35|2131|1800)/.test(digits)) return 'JCB';
+        if (/^(30[0-5]|36|38)/.test(digits)) return 'Diners';
+        return 'Card';
+      }
+
+      function luhnCheck(number) {
+        const digits = number.replace(/\D/g, '');
+        if (!/^\d+$/.test(digits) || digits.length < 12) return false;
+
+        let sum = 0;
+        let double = false;
+
+        for (let i = digits.length - 1; i >= 0; i--) {
+          let digit = parseInt(digits.charAt(i), 10);
+          if (double) {
+            digit *= 2;
+            if (digit > 9) digit -= 9;
+          }
+          sum += digit;
+          double = !double;
+        }
+
+        return sum % 10 === 0;
+      }
+
+      function formatCardNumber(value) {
+        const digits = value.replace(/\D/g, '').slice(0, 19);
+        const groups = [];
+        for (let i = 0; i < digits.length; i += 4) {
+          groups.push(digits.slice(i, i + 4));
+        }
+        return groups.join(' ');
+      }
+
+      function formatExpiry(value) {
+        const digits = value.replace(/\D/g, '').slice(0, 4);
+        if (digits.length < 3) return digits;
+        return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+      }
+
+      function updatePreview() {
+        const number = formatCardNumber(cardNumber.value);
+        const name = cardName.value.trim() || 'YOUR NAME';
+        const exp = formatExpiry(expiry.value) || 'MM/YY';
+        const brand = detectBrand(number);
+
+        previewNumber.textContent = number || '•••• •••• •••• ••••';
+        previewName.textContent = name.toUpperCase();
+        previewExpiry.textContent = exp;
+        brandText.textContent = brand;
+      }
+
+      cardNumber.addEventListener('input', (e) => {
+        e.target.value = formatCardNumber(e.target.value);
+        updatePreview();
+      });
+
+      cardName.addEventListener('input', updatePreview);
+
+      expiry.addEventListener('input', (e) => {
+        e.target.value = formatExpiry(e.target.value);
+        updatePreview();
+      });
+
+      cvv.addEventListener('input', () => {
+        cvv.value = cvv.value.replace(/\D/g, '').slice(0, 4);
+      });
+
+      document.getElementById('cardForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const digits = cardNumber.value.replace(/\D/g, '');
+        const b = detectBrand(cardNumber.value);
+        const name = cardName.value.trim();
+        const exp = expiry.value;
+        const cvvValue = cvv.value;
+
+        if (!digits) {
+          showError('Card number is required.');
+          return;
+        }
+
+        if (digits.length < 13 || digits.length > 19) {
+          showError('Card number length is invalid.');
+          return;
+        }
+
+        if (!luhnCheck(digits)) {
+          showError('Card number is invalid.');
+          return;
+        }
+
+        if (b === 'Unknown') {
+          showError('Unsupported card brand.');
+          return;
+        }
+
+        if (!name) {
+          showError('Cardholder name is required.');
+          return;
+        }
+
+        if (!/^\d{2}\/\d{2}$/.test(exp)) {
+          showError('Expiry must be in MM/YY format.');
+          return;
+        }
+
+        if (b === 'Amex' && cvvValue.length !== 4) {
+          showError('Amex CVV must be 4 digits.');
+          return;
+        }
+
+        if (b !== 'Amex' && cvvValue.length !== 3) {
+          showError('CVV must be 3 digits.');
+          return;
+        }
+
+        showSuccess(`Checkout successful! ${b} card passed validation.`);
+      });
+
+      function showError(message) {
+        result.className = 'result error';
+        result.textContent = message;
+      }
+
+      function showSuccess(message) {
+        result.className = 'result success';
+        result.textContent = message;
+      }
+    </script>
   </body>
 </html>

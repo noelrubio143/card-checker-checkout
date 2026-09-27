@@ -1,24 +1,11 @@
-# PayPal VBV Checkout Demo
+# Card Live Checker
 
-A fuller storefront checkout demo that includes:
-- multiple featured products
-- card brand detection
-- BIN issuer inspection
-- Luhn validation
-- expiry + CVV validation
-- secure VBV / 3DS style modal
-- local order approval flow and success page
-- Express backend for card validation and order creation
+A simple checkout-style card validation website.
 
-## Run locally
+## Run
 1. `npm install`
 2. `npm start`
 3. Open `http://localhost:3000`
 
-## Notes
-This is a front-end demo. It simulates a secure checkout flow and validates card structure locally, but it does not connect to a real bank or payment provider.
-
-## Example valid cards
-- 4111 1111 1111 1111 (Visa)
-- 5555 5555 5555 4444 (MasterCard)
-- 3782 822463 10005 (Amex)
+## Important
+This is a demo. It validates the card structure locally and shows a success message if the number passes basic validation checks.

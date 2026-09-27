@@ -1,0 +1,13 @@
+{
+  "name": "card-checker-checkout",
+  "version": "1.0.0",
+  "description": "PayPal-style VBV / 3DS checkout demo with card validation",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

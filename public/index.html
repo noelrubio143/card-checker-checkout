@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PayPal VBV Checkout Demo</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page">
+      <div class="checkout">
+        <section class="panel order-panel">
+          <div class="topbar">
+            <div class="brand">
+              <span class="brand-mark"></span>
+              <span>PayPal</span>
+            </div>
+            <div class="secure-pill">Secure Checkout</div>
+          </div>
+
+          <div class="product">
+            <div class="thumb">🎧</div>
+            <div class="details">
+              <h2>Premium Wireless Headphones</h2>
+              <p>Black • Studio Pro</p>
+            </div>
+            <div class="price">$299</div>
+          </div>
+
+          <div class="summary">
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span>$299.00</span>
+            </div>
+            <div class="summary-row">
+              <span>Shipping</span>
+              <span>$12.00</span>
+            </div>
+            <div class="summary-row">
+              <span>Tax</span>
+              <span>$25.00</span>
+            </div>
+            <div class="summary-row total">
+              <span>Total</span>
+              <span>$336.00</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel payment-panel">
+          <div class="payment-header">
+            <h3>Payment</h3>
+            <div class="secure-pill">VBV / 3DS</div>
+          </div>
+
+          <div class="pay-methods">
+            <div class="method active">Card</div>
+            <div class="method">PayPal</div>
+          </div>
+
+          <div class="payment-card">
+            <div class="card-top">
+              <div class="chip"></div>
+              <div class="card-brand" id="brandBadge">Card</div>
+            </div>
+
+            <div class="card-number" id="cardNumberPreview">•••• •••• •••• ••••</div>
+
+            <div class="card-meta">
+              <div>
+                <strong>Card Holder</strong>
+                <span id="cardNamePreview">YOUR NAME</span>
+              </div>
+              <div>
+                <strong>Expires</strong>
+                <span id="expiryPreview">MM/YY</span>
+              </div>
+            </div>
+          </div>
+
+          <form id="paymentForm" class="form" novalidate>
+            <div class="field">
+              <label for="cardNumber">Card Number</label>
+              <input id="cardNumber" type="text" maxlength="19" placeholder="1234 5678 9012 3456" inputmode="numeric" />
+            </div>
+
+            <div class="field">
+              <label for="cardName">Cardholder Name</label>
+              <input id="cardName" type="text" placeholder="Juan Dela Cruz" />
+            </div>
+
+            <div class="double">
+              <div class="field">
+                <label for="expiry">Expiry</label>
+                <input id="expiry" type="text" maxlength="5" placeholder="12/30" inputmode="numeric" />
+              </div>
+
+              <div class="field">
+                <label for="cvv">CVV</label>
+                <input id="cvv" type="password" maxlength="4" placeholder="123" inputmode="numeric" />
+              </div>
+            </div>
+
+            <div id="status" class="status" role="alert"></div>
+
+            <button type="submit" class="pay-button">Pay $336.00</button>
+          </form>
+
+          <div class="secure-banner">Verified by Visa / Mastercard SecureCode simulation</div>
+          <div class="subnote">Demo only. This does not verify a real card against a bank or payment provider. It simulates a secure checkout flow.</div>
+        </section>
+      </div>
+    </div>
+
+    <div class="modal" id="authModal" aria-hidden="true">
+      <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+        <h4 id="authTitle">Secure verification</h4>
+        <p>For your security, enter the 6-digit code sent to your phone. This is a VBV / 3DS demo flow.</p>
+        <input id="otpInput" class="otp-input" maxlength="6" placeholder="123456" inputmode="numeric" />
+        <div class="modal-actions">
+          <button type="button" class="cancel-btn" id="cancelAuth">Cancel</button>
+          <button type="button" class="confirm-btn" id="confirmAuth">Verify</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
